@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Vote {
+  id		     String    @id @default(auto()) @map("_id") @db.ObjectId
+  color1Id           Int     
+  color2Id 	     Int  
+  chosenColorId      Int    
+}
+
+model Color {
+  // id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  color     Int       @id @map("_id")
+  winCount  Int       @default(0)
+  loseCount Int       @default(0)
+}
