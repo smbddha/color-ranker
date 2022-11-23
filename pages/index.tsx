@@ -1,47 +1,46 @@
 // import Image from 'next/image'
 // import Link from 'next/link'
 import prisma from "../lib/prisma";
-import { Color} from "@prisma/client";
+import { Color } from "@prisma/client";
+import useSWR from "swr";
+
 import ColorBox from "../components/colorbox";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getRandomHex } from "../utils";
 
 type Props = {
   color1: Color;
   color2: Color;
 };
 
-const HEX_MAX = 256 ** 3;
-function getRandomHex() {
-  return Math.floor(Math.random() * HEX_MAX);
-}
+// export async function getServerSideProps() {
+//   // fetch two color
+//   const hex1 = getRandomHex();
+//   const hex2 = getRandomHex();
 
-export async function getServerSideProps() {
-  // fetch two color
-  const hex1 = getRandomHex();
-  const hex2 = getRandomHex();
+//   const color1 = await prisma.color.upsert({
+//     where: { color: hex1 },
+//     update: {},
+//     create: { color: hex1, winCount: 0, loseCount: 0 },
+//   });
 
-  const color1 = await prisma.color.upsert({
-    where: { color: hex1 },
-    update: {},
-    create: { color: hex1, winCount: 0, loseCount: 0 },
-  });
+//   const color2 = await prisma.color.upsert({
+//     where: { color: hex2 },
+//     update: {},
+//     create: { color: hex2, winCount: 0, loseCount: 0 },
+//   });
 
-  const color2 = await prisma.color.upsert({
-    where: { color: hex2 },
-    update: {},
-    create: { color: hex2, winCount: 0, loseCount: 0 },
-  });
+//   return { props: { color1, color2 } };
+// }
+//@ts-ignore
+const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
 
-  return { props: { color1, color2 } };
-}
-
-export default function Home(props: Props) {
-  let { color1, color2 } = props;
-
-  const router = useRouter();
+export default function Home() {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
+
+  const { data, error, isValidating, mutate } = useSWR("/api/colors", fetcher);
 
   const handleSelect = (color: number) => {
     setSelectedColor(color);
@@ -55,8 +54,8 @@ export default function Home(props: Props) {
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify({
-        color1: color1.color,
-        color2: color2.color,
+        color1: data.data[0].color,
+        color2: data.data[1].color,
         chosenColor: color,
       }),
     });
@@ -65,7 +64,8 @@ export default function Home(props: Props) {
       throw new Error(`Error: ${res.status}`);
     }
 
-    router.reload();
+    mutate();
+    setSelectedColor(null);
   };
 
   const handleSubmit = () => {
@@ -89,16 +89,22 @@ export default function Home(props: Props) {
         }}
       >
         <label className={styles.label}> which color do you prefer? </label>
-        <ColorBox
-          color={color1.color}
-          selectedColor={selectedColor}
-          onClick={handleSelect}
-        />
-        <ColorBox
-          color={color2.color}
-          selectedColor={selectedColor}
-          onClick={handleSelect}
-        />
+        {isValidating && "loading..."}
+        {error && "error!"}
+        {!isValidating && data && (
+          <>
+            <ColorBox
+              color={data.data[0].color}
+              selectedColor={selectedColor}
+              onClick={handleSelect}
+            />
+            <ColorBox
+              color={data.data[1].color}
+              selectedColor={selectedColor}
+              onClick={handleSelect}
+            />
+          </>
+        )}
 
         <div className={styles.submitbutton} onClick={handleSubmit}>
           submit

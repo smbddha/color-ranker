@@ -15,3 +15,8 @@ export function numberToRGB(n: number): RGB {
 export function luminance({ r, g, b }: RGB): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
+
+const HEX_MAX = 256 ** 3;
+export function getRandomHex() {
+  return Math.floor(Math.random() * HEX_MAX);
+}
