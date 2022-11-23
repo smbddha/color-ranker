@@ -1,10 +1,8 @@
 // import Image from 'next/image'
 // import Link from 'next/link'
 import prisma from "../lib/prisma";
-import type { Color, Vote } from "../lib/prisma";
-import ColorBox from "../components/colorbox";
+import { Color } from "@prisma/client";
 import styles from "../styles/Home.module.css";
-import { useRouter } from "next/router";
 import { useState, useRef } from "react";
 import { luminance, numberToRGB } from "../utils";
 

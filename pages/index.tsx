@@ -1,7 +1,7 @@
 // import Image from 'next/image'
 // import Link from 'next/link'
 import prisma from "../lib/prisma";
-import type { Color, Vote } from "../lib/prisma";
+import { Color} from "@prisma/client";
 import ColorBox from "../components/colorbox";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
@@ -45,7 +45,6 @@ export default function Home(props: Props) {
 
   const handleSelect = (color: number) => {
     setSelectedColor(color);
-    console.log(color);
   };
 
   const submitVote = async (color: number) => {

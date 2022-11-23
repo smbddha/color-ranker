@@ -11,7 +11,7 @@ type Props = {
 
 export default function ColorBox(props: Props) {
   const { color, selectedColor, onClick } = props;
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const lum = useMemo(() => luminance(numberToRGB(color)), []);
 
