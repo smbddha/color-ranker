@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: JSX.Element | JSX.Eleme
 	return (
 			<div className={`${styles.container} ${lexend.className}`}>
 			<Header />
-					<main className={styles.main}>{children}</main>
+			<main className={styles.main}>{children}</main>
 			<Footer />
 		</div>
 	)
